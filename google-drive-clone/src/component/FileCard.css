@@ -6,7 +6,7 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: box-shadow 0.3s ease, transform 0.3s ease;
-  width: 150px;
+  width: 170px;
 }
 
 .file-card:hover {
@@ -15,7 +15,7 @@
 }
 
 .file-card img {
-  width: 50px; /* 👈 This is now smaller */
+  width: 50px;
   margin-bottom: 10px;
 }
 
@@ -24,6 +24,7 @@
   font-weight: 500;
   color: #202124;
   margin: 0;
+  word-break: break-all;
 }
 
 .file-size {
@@ -31,23 +32,38 @@
   color: #5f6368;
   margin-top: 4px;
 }
-.delete-btn {
+
+.card-actions {
   margin-top: 10px;
-  background-color: #ff4d4d;
-  color: white;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.action-btn {
   border: none;
-  padding: 5px 10px;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.delete-btn {
+  background-color: #ff4d4d;
+  color: white;
+  padding: 5px 10px;
 }
 
 .delete-btn:hover {
   background-color: #e60000;
 }
-.file-card {
-  cursor: pointer; /* 👈 Adds pointer cursor */
+
+.star-btn {
+  background: #f1f3f4;
+  color: #3c4043;
+  padding: 5px 9px;
 }
 
-.delete-btn {
-  cursor: pointer; /* Ensures delete also shows pointer */
+.restore-btn {
+  background: #188038;
+  color: white;
+  padding: 5px 10px;
 }
