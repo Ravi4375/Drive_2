@@ -1,7 +1,18 @@
 import React, { useRef } from "react";
 import "./Sidebar.css";
 
-function Sidebar({ onFileSelect }) {
+const sidebarItems = [
+  { id: "home", label: "🏠 Home" },
+  { id: "my-drive", label: "📁 My Drive" },
+  { id: "computers", label: "💻 Computers" },
+  { id: "shared", label: "👥 Shared with me" },
+  { id: "recent", label: "🕒 Recent" },
+  { id: "starred", label: "⭐ Starred" },
+  { id: "trash", label: "🗑️ Trash" },
+  { id: "storage", label: "☁️ Storage" },
+];
+
+function Sidebar({ onFileSelect, onSectionSelect, activeSection }) {
   const hiddenFileInput = useRef(null);
 
   const handleClick = () => {
@@ -11,7 +22,8 @@ function Sidebar({ onFileSelect }) {
   const handleChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      onFileSelect(file); // Pass file to DriveApp
+      onFileSelect(file);
+      event.target.value = "";
     }
   };
 
@@ -34,14 +46,15 @@ function Sidebar({ onFileSelect }) {
         style={{ display: "none" }}
       />
       <ul>
-        <li>🏠 Home</li>
-        <li>📁 My Drive</li>
-        <li>💻 Computers</li>
-        <li>👥 Shared with me</li>
-        <li>🕒 Recent</li>
-        <li>⭐ Starred</li>
-        <li>🗑️ Trash</li>
-        <li>☁️ Storage</li>
+        {sidebarItems.map((item) => (
+          <li
+            key={item.id}
+            className={activeSection === item.id ? "active" : ""}
+            onClick={() => onSectionSelect(item.id)}
+          >
+            {item.label}
+          </li>
+        ))}
       </ul>
     </div>
   );

@@ -5,61 +5,94 @@ import FileCard from "../src/component/FileCard";
 import "./DriveApp.css";
 import axios from "axios";
 
+const API_BASE_URL = "http://localhost:8080/api/files";
+
 function DriveApp() {
   const [files, setFiles] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeSection, setActiveSection] = useState("home");
+  const [storageInfo, setStorageInfo] = useState(null);
 
   useEffect(() => {
-    fetchFiles();
-  }, []);
+    fetchFilesBySection(activeSection);
+  }, [activeSection]);
 
-  const fetchFiles = async () => {
-    const res = await axios.get("http://localhost:8080/api/files/list");
+  const fetchFilesBySection = async (section) => {
+    if (section === "storage") {
+      const storageRes = await axios.get(`${API_BASE_URL}/storage`);
+      setStorageInfo(storageRes.data);
+      setFiles([]);
+      return;
+    }
+
+    const res = await axios.get(`${API_BASE_URL}/view/${section}`);
     setFiles(res.data);
+    setStorageInfo(null);
   };
 
   const handleUploadFromSidebar = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    await axios.post("http://localhost:8080/api/files/upload", formData, {
+    await axios.post(`${API_BASE_URL}/upload`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
-    fetchFiles();
+    fetchFilesBySection(activeSection);
   };
 
   const handleDownload = (id) => {
-    window.location.href = `http://localhost:8080/api/files/download/${id}`;
+    window.location.href = `${API_BASE_URL}/download/${id}`;
   };
 
   const handleDelete = async (id, fileName) => {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${fileName}"?`
-    );
+    const confirmed = window.confirm(`Move "${fileName}" to trash?`);
     if (!confirmed) return;
 
-    await axios.delete(`http://localhost:8080/api/files/delete/${id}`);
-    fetchFiles();
+    await axios.patch(`${API_BASE_URL}/trash/${id}`);
+    fetchFilesBySection(activeSection);
   };
 
-  // Filter files based on search term
-  const filteredFiles = files.filter((file) =>
-    file.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleRestore = async (id) => {
+    await axios.patch(`${API_BASE_URL}/restore/${id}`);
+    fetchFilesBySection(activeSection);
+  };
+
+  const handleToggleStar = async (id) => {
+    await axios.patch(`${API_BASE_URL}/star/${id}/toggle`);
+    fetchFilesBySection(activeSection);
+  };
+
+  const filteredFiles = files.filter((file) => file.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  const storageUsedGb = storageInfo ? (storageInfo.usedBytes / (1024 * 1024 * 1024)).toFixed(2) : 0;
+  const storageTotalGb = storageInfo ? (storageInfo.maxBytes / (1024 * 1024 * 1024)).toFixed(0) : 15;
+  const usedPercentage = storageInfo ? storageInfo.usedPercentage.toFixed(2) : 0;
 
   return (
     <div className="main-layout">
-      <Sidebar onFileSelect={handleUploadFromSidebar} />
+      <Sidebar
+        onFileSelect={handleUploadFromSidebar}
+        onSectionSelect={setActiveSection}
+        activeSection={activeSection}
+      />
       <div className="content-area">
         <Header onSearch={setSearchTerm} />
 
-        {filteredFiles.length === 0 ? (
+        {activeSection === "storage" ? (
+          <div className="storage-card">
+            <h2>☁️ Storage</h2>
+            <p>
+              {storageUsedGb} GB used of {storageTotalGb} GB
+            </p>
+            <div className="storage-progress">
+              <div className="storage-progress-fill" style={{ width: `${usedPercentage}%` }} />
+            </div>
+          </div>
+        ) : filteredFiles.length === 0 ? (
           <div className="empty-state">
             <img src="/default.svg" alt="No Files" style={{ width: "500px" }} />
-            <p>
-              Drag your files and folders here or use the “New” button to upload
-            </p>
+            <p>No files available in this section.</p>
           </div>
         ) : (
           <div className="files-grid">
@@ -67,8 +100,11 @@ function DriveApp() {
               <FileCard
                 key={file.id}
                 file={file}
+                viewMode={activeSection}
                 onDownload={handleDownload}
-                onDelete={() => handleDelete(file.id, file.name)}
+                onDelete={handleDelete}
+                onRestore={handleRestore}
+                onToggleStar={handleToggleStar}
               />
             ))}
           </div>
