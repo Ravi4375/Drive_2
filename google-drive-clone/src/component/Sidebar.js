@@ -13,6 +13,7 @@ const sidebarItems = [
 ];
 
 function Sidebar({ onFileSelect, onCreateFolder, onSectionSelect, activeSection }) {
+function Sidebar({ onFileSelect, onSectionSelect, activeSection }) {
   const hiddenFileInput = useRef(null);
 
   const handleClick = () => {
@@ -41,6 +42,7 @@ function Sidebar({ onFileSelect, onCreateFolder, onSectionSelect, activeSection 
 
       <button className="new-btn folder-btn" onClick={onCreateFolder}>
         📂 New Folder
+        New
       </button>
 
       <input

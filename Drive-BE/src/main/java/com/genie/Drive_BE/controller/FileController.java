@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -63,6 +66,8 @@ public class FileController {
                 return ResponseEntity.badRequest().build();
             }
             Resource resource = new UrlResource(java.nio.file.Paths.get(fileEntity.getPath()).toUri());
+            Path path = Paths.get(fileEntity.getPath());
+            Resource resource = new UrlResource(path.toUri());
             return ResponseEntity.ok()
                     .header("content-Disposition", "attachment; filename=\"" + fileEntity.getName() + "\"")
                     .body(resource);
@@ -126,6 +131,10 @@ public class FileController {
     public ResponseEntity<String> deleteFile(@PathVariable Long id) {
         try {
             fileServiceStorage.permanentDelete(id);
+            FileEntity fileEntity = fileServiceStorage.getFileById(id);
+            Path path = Paths.get(fileEntity.getPath());
+            Files.deleteIfExists(path);
+            fileServiceStorage.deleteById(id);
             return ResponseEntity.ok("File deleted successfully");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Failed to delete file.");
