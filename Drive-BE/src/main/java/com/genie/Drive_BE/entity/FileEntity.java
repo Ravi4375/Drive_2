@@ -18,6 +18,9 @@ public class FileEntity {
     private Long size;
     private String type;
     private Long parentFolderId;
+    private Boolean starred;
+    private Boolean trashed;
+    private Boolean shared;
     private LocalDateTime createdAt;
 
     public FileEntity() {
@@ -30,6 +33,9 @@ public class FileEntity {
         this.size = size;
         this.type = type;
         this.parentFolderId = parentFolderId;
+        this.starred = false;
+        this.trashed = false;
+        this.shared = false;
         this.createdAt = createdAt;
     }
 
@@ -87,5 +93,29 @@ public class FileEntity {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Boolean getStarred() {
+        return starred;
+    }
+
+    public void setStarred(Boolean starred) {
+        this.starred = starred;
+    }
+
+    public Boolean getTrashed() {
+        return trashed;
+    }
+
+    public void setTrashed(Boolean trashed) {
+        this.trashed = trashed;
+    }
+
+    public Boolean getShared() {
+        return shared;
+    }
+
+    public void setShared(Boolean shared) {
+        this.shared = shared;
     }
 }
