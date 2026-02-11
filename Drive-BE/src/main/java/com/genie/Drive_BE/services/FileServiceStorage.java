@@ -54,6 +54,20 @@ public class FileServiceStorage {
         return "File uploaded Successfully!";
     }
 
+    public FileEntity createFolder(String folderName, Long parentFolderId) {
+        FileEntity folder = new FileEntity();
+        folder.setName(folderName);
+        folder.setPath("");
+        folder.setSize(0L);
+        folder.setType("folder");
+        folder.setParentFolderId(parentFolderId);
+        folder.setStarred(false);
+        folder.setTrashed(false);
+        folder.setShared(false);
+        folder.setCreatedAt(LocalDateTime.now());
+        return fileRepository.save(folder);
+    }
+
     public List<FileEntity> getFilesInFolder(Long parentFolderId) {
         if (parentFolderId == null) {
             return fileRepository.findByTrashedFalseAndParentFolderIdIsNull();
@@ -98,6 +112,15 @@ public class FileServiceStorage {
         boolean starred = Boolean.TRUE.equals(fileEntity.getStarred());
         fileEntity.setStarred(!starred);
         return fileRepository.save(fileEntity);
+    }
+
+    public void permanentDelete(Long id) throws IOException {
+        FileEntity fileEntity = getFileById(id);
+        if ("file".equalsIgnoreCase(fileEntity.getType()) && fileEntity.getPath() != null && !fileEntity.getPath().isBlank()) {
+            Path path = Paths.get(fileEntity.getPath());
+            Files.deleteIfExists(path);
+        }
+        fileRepository.deleteById(id);
     }
 
     public void deleteById(Long id) {

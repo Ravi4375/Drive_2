@@ -1,6 +1,21 @@
 import React from "react";
 import "./FileCard.css";
 
+const FileCard = ({
+  file,
+  viewMode,
+  onDownload,
+  onDelete,
+  onRestore,
+  onPermanentDelete,
+  onToggleStar,
+}) => {
+  const getFileIcon = (entry) => {
+    if (entry.type === "folder") {
+      return "https://cdn-icons-png.flaticon.com/512/716/716784.png";
+    }
+
+    const ext = entry.name.split(".").pop().toLowerCase();
 const FileCard = ({ file, viewMode, onDownload, onDelete, onRestore, onToggleStar }) => {
   const getFileIcon = (fileName) => {
     const ext = fileName.split(".").pop().toLowerCase();
@@ -17,6 +32,12 @@ const FileCard = ({ file, viewMode, onDownload, onDelete, onRestore, onToggleSta
   };
 
   return (
+    <div className="file-card" onClick={() => viewMode !== "trash" && onDownload(file)}>
+      <img src={getFileIcon(file)} alt="file icon" />
+      <p className="file-name">{file.name}</p>
+      <p className="file-size">
+        {file.type === "folder" ? "Folder" : `${(file.size / 1024).toFixed(2)} KB`}
+      </p>
     <div className="file-card" onClick={() => viewMode !== "trash" && onDownload(file.id)}>
       <img src={getFileIcon(file.name)} alt="file icon" />
       <p className="file-name">{file.name}</p>
@@ -30,6 +51,14 @@ const FileCard = ({ file, viewMode, onDownload, onDelete, onRestore, onToggleSta
         )}
 
         {viewMode === "trash" ? (
+          <>
+            <button className="action-btn restore-btn" onClick={() => onRestore(file.id)}>
+              ♻️ Restore
+            </button>
+            <button className="action-btn permanent-btn" onClick={() => onPermanentDelete(file.id, file.name)}>
+              ❌ Delete forever
+            </button>
+          </>
           <button className="action-btn restore-btn" onClick={() => onRestore(file.id)}>
             ♻️ Restore
           </button>

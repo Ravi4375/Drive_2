@@ -6,6 +6,7 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: box-shadow 0.3s ease, transform 0.3s ease;
+  width: 220px;
   width: 170px;
 }
 
@@ -37,6 +38,9 @@
   margin-top: 10px;
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
@@ -66,4 +70,11 @@
   background: #188038;
   color: white;
   padding: 5px 10px;
+}
+
+.permanent-btn {
+  background: #b00020;
+  color: #fff;
+  padding: 5px 10px;
+  font-size: 12px;
 }

@@ -2,16 +2,17 @@
   background: white;
   padding: 20px;
   display: flex;
-  justify-content: center; /* 👈 Center all header content */
+  justify-content: center;
   align-items: center;
-  flex-direction: column; /* Stack heading and search */
+  flex-direction: column;
   border-bottom: 1px solid #e0e0e0;
+  gap: 12px;
 }
 
 .header h2 {
   font-size: 24px;
   color: #202124;
-  margin-bottom: 15px;
+  margin-bottom: 4px;
 }
 
 .header input {
@@ -19,4 +20,13 @@
   padding: 10px;
   border: 1px solid #e0e0e0;
   border-radius: 20px;
+}
+
+.logout-btn {
+  background: #202124;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 18px;
+  cursor: pointer;
 }

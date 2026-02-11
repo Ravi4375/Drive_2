@@ -7,6 +7,7 @@ import axios from "axios";
 
 const API_BASE_URL = "http://localhost:8080/api/files";
 
+function DriveApp({ onLogout }) {
 function DriveApp() {
   const [files, setFiles] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -41,6 +42,26 @@ function DriveApp() {
     fetchFilesBySection(activeSection);
   };
 
+  const handleCreateFolder = async () => {
+    const folderName = window.prompt("Enter folder name");
+    if (!folderName || !folderName.trim()) return;
+
+    await axios.post(`${API_BASE_URL}/folder`, {
+      name: folderName.trim(),
+      parentFolderId: null,
+    });
+
+    if (["home", "my-drive", "computers"].includes(activeSection)) {
+      fetchFilesBySection(activeSection);
+    }
+  };
+
+  const handleDownload = (file) => {
+    if (file.type === "folder") {
+      alert("Folder open navigation is not added yet.");
+      return;
+    }
+    window.location.href = `${API_BASE_URL}/download/${file.id}`;
   const handleDownload = (id) => {
     window.location.href = `${API_BASE_URL}/download/${id}`;
   };
@@ -55,6 +76,14 @@ function DriveApp() {
 
   const handleRestore = async (id) => {
     await axios.patch(`${API_BASE_URL}/restore/${id}`);
+    fetchFilesBySection(activeSection);
+  };
+
+  const handlePermanentDelete = async (id, fileName) => {
+    const confirmed = window.confirm(`Permanently delete "${fileName}"? This cannot be undone.`);
+    if (!confirmed) return;
+
+    await axios.delete(`${API_BASE_URL}/permanent-delete/${id}`);
     fetchFilesBySection(activeSection);
   };
 
@@ -73,10 +102,12 @@ function DriveApp() {
     <div className="main-layout">
       <Sidebar
         onFileSelect={handleUploadFromSidebar}
+        onCreateFolder={handleCreateFolder}
         onSectionSelect={setActiveSection}
         activeSection={activeSection}
       />
       <div className="content-area">
+        <Header onSearch={setSearchTerm} onLogout={onLogout} />
         <Header onSearch={setSearchTerm} />
 
         {activeSection === "storage" ? (
@@ -104,6 +135,7 @@ function DriveApp() {
                 onDownload={handleDownload}
                 onDelete={handleDelete}
                 onRestore={handleRestore}
+                onPermanentDelete={handlePermanentDelete}
                 onToggleStar={handleToggleStar}
               />
             ))}

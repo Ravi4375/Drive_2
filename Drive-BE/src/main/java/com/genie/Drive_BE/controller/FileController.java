@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,10 +37,35 @@ public class FileController {
         }
     }
 
+    @PostMapping("/folder")
+    public ResponseEntity<FileEntity> createFolder(@RequestBody Map<String, Object> payload) {
+        try {
+            String folderName = String.valueOf(payload.getOrDefault("name", "")).trim();
+            if (folderName.isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            Long parentFolderId = null;
+            Object parentValue = payload.get("parentFolderId");
+            if (parentValue != null) {
+                parentFolderId = Long.parseLong(parentValue.toString());
+            }
+
+            FileEntity folder = fileServiceStorage.createFolder(folderName, parentFolderId);
+            return ResponseEntity.ok(folder);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
     @GetMapping("/download/{id}")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long id) {
         try {
             FileEntity fileEntity = fileServiceStorage.getFileById(id);
+            if (!"file".equalsIgnoreCase(fileEntity.getType())) {
+                return ResponseEntity.badRequest().build();
+            }
+            Resource resource = new UrlResource(java.nio.file.Paths.get(fileEntity.getPath()).toUri());
             Path path = Paths.get(fileEntity.getPath());
             Resource resource = new UrlResource(path.toUri());
             return ResponseEntity.ok()
@@ -104,6 +130,7 @@ public class FileController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteFile(@PathVariable Long id) {
         try {
+            fileServiceStorage.permanentDelete(id);
             FileEntity fileEntity = fileServiceStorage.getFileById(id);
             Path path = Paths.get(fileEntity.getPath());
             Files.deleteIfExists(path);
@@ -111,6 +138,18 @@ public class FileController {
             return ResponseEntity.ok("File deleted successfully");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Failed to delete file.");
+        }
+    }
+
+    @DeleteMapping("/permanent-delete/{id}")
+    public ResponseEntity<Map<String, String>> permanentDelete(@PathVariable Long id) {
+        try {
+            fileServiceStorage.permanentDelete(id);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "File permanently deleted.");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
         }
     }
 }

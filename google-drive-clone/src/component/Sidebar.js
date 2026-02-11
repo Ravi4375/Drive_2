@@ -12,6 +12,7 @@ const sidebarItems = [
   { id: "storage", label: "☁️ Storage" },
 ];
 
+function Sidebar({ onFileSelect, onCreateFolder, onSectionSelect, activeSection }) {
 function Sidebar({ onFileSelect, onSectionSelect, activeSection }) {
   const hiddenFileInput = useRef(null);
 
@@ -36,6 +37,11 @@ function Sidebar({ onFileSelect, onSectionSelect, activeSection }) {
           width="20"
           style={{ marginRight: "8px" }}
         />
+        Upload File
+      </button>
+
+      <button className="new-btn folder-btn" onClick={onCreateFolder}>
+        📂 New Folder
         New
       </button>
 
