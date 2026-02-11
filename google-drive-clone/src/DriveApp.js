@@ -8,7 +8,6 @@ import axios from "axios";
 const API_BASE_URL = "http://localhost:8080/api/files";
 
 function DriveApp({ onLogout }) {
-function DriveApp() {
   const [files, setFiles] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeSection, setActiveSection] = useState("home");
@@ -62,8 +61,6 @@ function DriveApp() {
       return;
     }
     window.location.href = `${API_BASE_URL}/download/${file.id}`;
-  const handleDownload = (id) => {
-    window.location.href = `${API_BASE_URL}/download/${id}`;
   };
 
   const handleDelete = async (id, fileName) => {
@@ -108,7 +105,6 @@ function DriveApp() {
       />
       <div className="content-area">
         <Header onSearch={setSearchTerm} onLogout={onLogout} />
-        <Header onSearch={setSearchTerm} />
 
         {activeSection === "storage" ? (
           <div className="storage-card">

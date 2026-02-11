@@ -16,9 +16,6 @@ const FileCard = ({
     }
 
     const ext = entry.name.split(".").pop().toLowerCase();
-const FileCard = ({ file, viewMode, onDownload, onDelete, onRestore, onToggleStar }) => {
-  const getFileIcon = (fileName) => {
-    const ext = fileName.split(".").pop().toLowerCase();
 
     if (ext === "pdf") return "https://cdn-icons-png.flaticon.com/512/337/337946.png";
     if (["doc", "docx"].includes(ext)) return "https://cdn-icons-png.flaticon.com/512/337/337932.png";
@@ -38,10 +35,6 @@ const FileCard = ({ file, viewMode, onDownload, onDelete, onRestore, onToggleSta
       <p className="file-size">
         {file.type === "folder" ? "Folder" : `${(file.size / 1024).toFixed(2)} KB`}
       </p>
-    <div className="file-card" onClick={() => viewMode !== "trash" && onDownload(file.id)}>
-      <img src={getFileIcon(file.name)} alt="file icon" />
-      <p className="file-name">{file.name}</p>
-      <p className="file-size">{(file.size / 1024).toFixed(2)} KB</p>
 
       <div className="card-actions" onClick={(event) => event.stopPropagation()}>
         {viewMode !== "trash" && (
@@ -59,9 +52,6 @@ const FileCard = ({ file, viewMode, onDownload, onDelete, onRestore, onToggleSta
               ❌ Delete forever
             </button>
           </>
-          <button className="action-btn restore-btn" onClick={() => onRestore(file.id)}>
-            ♻️ Restore
-          </button>
         ) : (
           <button className="action-btn delete-btn" onClick={() => onDelete(file.id, file.name)}>
             🗑️
